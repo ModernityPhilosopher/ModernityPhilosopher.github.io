@@ -1,11 +1,152 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>ModernityPhilosopher</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <style>
+    :root { --bg: #0f0f12; --fg: #eaeaea; --muted: #b7b7b7; --accent: #ff0033; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--fg); background: var(--bg); }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #222; }
+    header .brand { display: flex; align-items: center; gap: 12px; }
+    header img { height: 36px; }
+    nav a { color: var(--fg); text-decoration: none; margin-left: 16px; }
+    nav a:hover { color: var(--accent); }
+    .hero { padding: 48px 20px; text-align: center; background:
+      radial-gradient(600px 200px at 50% -40px, rgba(255,0,51,0.25), transparent 70%); }
+    .hero h1 { margin: 0 0 10px 0; font-size: 40px; letter-spacing: 0.5px; }
+    .hero p { margin: 0; color: var(--muted); }
+    main { max-width: 900px; margin: 30px auto; padding: 0 20px 40px 20px; }
+    .card { background: #15151a; border: 1px solid #222; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    button, input, textarea { font-size: 16px; }
+    button { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    input[type="text"] { padding: 8px 10px; border: 1px solid #333; border-radius: 8px; background: #0f0f12; color: var(--fg); }
+    textarea { width: 100%; min-height: 160px; padding: 10px; border: 1px solid #333; border-radius: 8px; background: #0f0f12; color: var(--fg); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .gallery img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; border: 1px solid #222; }
+    footer { text-align: center; color: var(--muted); padding: 30px 10px; border-top: 1px solid #222; }
+  </style>
 </head>
 <body>
-  <h1>Hello from ModernityPhilosopher!</h1>
-  <p>If you see this page, GitHub Pages is working.</p>
-  <p><a href="page1.html">Go to Page 1</a></p>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="ModernityPhilosopher logo">
+      <strong>ModernityPhilosopher</strong>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Quiet craft in a loud age</h1>
+    <p>Short notes. Clear experiments. No feed. No noise.</p>
+  </section>
+
+  <main>
+    <section class="card">
+      <h2>Play with the page</h2>
+      <p>
+        <button onclick="sayHello()">Say hello</button>
+        <button onclick="randomThought()">Random thought</button>
+      </p>
+      <div id="out" style="margin-top:8px;"></div>
+    </section>
+
+    <section class="card">
+      <h2>Your name</h2>
+      <p>Type your name, then press submit.</p>
+      <p>
+        <input id="nameBox" type="text" placeholder="Type here">
+        <button onclick="greet()">Submit</button>
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Private notebook</h2>
+      <p>This saves on your device only.</p>
+      <textarea id="notes" placeholder="Write ideas here"></textarea>
+      <p style="margin-top:10px;">
+        <button onclick="saveNotes()">Save notes</button>
+        <button onclick="loadNotes()">Load notes</button>
+        <button onclick="clearNotes()">Clear notes</button>
+      </p>
+      <div id="saveState" style="font-size:14px; color: var(--muted);"></div>
+    </section>
+
+    <section class="card">
+      <h2>Gallery</h2>
+      <p>After you upload pictures, they will appear here.</p>
+      <div class="gallery" id="gallery">
+        <!-- Images will load here if present -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> ModernityPhilosopher</p>
+  </footer>
+
+  <script>
+    function byId(id){ return document.getElementById(id); }
+    function sayHello(){ byId("out").innerText = "Hello friend. Keep going."; }
+    function randomThought(){
+      var lines = [
+        "Write to see what you think.",
+        "Clarity grows from patient notes.",
+        "Small pages become a book.",
+        "Silence is a fine teacher.",
+        "Truth likes simple words."
+      ];
+      var i = Math.floor(Math.random() * lines.length);
+      byId("out").innerText = lines[i];
+    }
+    function greet(){
+      var name = byId("nameBox").value.trim();
+      if(name.length>0){
+        byId("out").innerText = "Welcome " + name + ". This place is yours.";
+        try { localStorage.setItem("mp_name", name); } catch(e){}
+      } else {
+        byId("out").innerText = "Please type your name first.";
+      }
+    }
+    function saveNotes(){
+      var text = byId("notes").value;
+      try {
+        localStorage.setItem("mp_notes", text);
+        var t = new Date().toLocaleString();
+        byId("saveState").innerText = "Saved at " + t;
+      } catch(e) { byId("saveState").innerText = "Save failed in this browser."; }
+    }
+    function loadNotes(){
+      try {
+        var text = localStorage.getItem("mp_notes") || "";
+        byId("notes").value = text;
+        var name = localStorage.getItem("mp_name");
+        if(name){ byId("out").innerText = "Welcome back " + name + "."; }
+        byId("saveState").innerText = "Loaded from your device storage.";
+      } catch(e) { byId("saveState").innerText = "Load failed in this browser."; }
+    }
+    function clearNotes(){
+      byId("notes").value = "";
+      try { localStorage.removeItem("mp_notes"); byId("saveState").innerText = "Cleared."; }
+      catch(e) { byId("saveState").innerText = "Clear failed in this browser."; }
+    }
+    function loadGallery(){
+      var files = ["assets/gallery1.jpg","assets/gallery2.jpg","assets/gallery3.jpg"];
+      var wrap = byId("gallery");
+      files.forEach(function(src){
+        var img = new Image();
+        img.onload = function(){ wrap.appendChild(img); };
+        img.src = src;
+        img.alt = "Gallery image";
+      });
+    }
+    document.getElementById("year").innerText = new Date().getFullYear();
+    window.addEventListener("load", function(){ loadNotes(); loadGallery(); });
+  </script>
 </body>
 </html>

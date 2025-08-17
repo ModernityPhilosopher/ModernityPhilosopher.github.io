@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ModernityPhilosopher</title>
+</head>
+<body bgcolor="#f4f4f4" text="#222222" link="#2255aa" vlink="#5522aa" alink="#aa2222">
+  <center>
+    <h1>ModernityPhilosopher</h1>
+    <p>Welcome to my quiet corner for thought and craft.</p>
+
+    <hr width="60%">
+
+    <h2>Play with the page</h2>
+    <p>
+      <button onclick="sayHello()">Say hello</button>
+      <button onclick="randomThought()">Random thought</button>
+    </p>
+    <div id="out" style="font-size:18px; margin-top:10px;"></div>
+
+    <hr width="60%">
+
+    <h2>Your name</h2>
+    <p>Type your name, then press submit.</p>
+    <p>
+      <input id="nameBox" type="text" size="30" placeholder="Type here">
+      <button onclick="greet()">Submit</button>
+    </p>
+
+    <hr width="60%">
+
+    <h2>Private notebook</h2>
+    <p>This saves on your device. It does not upload to any server.</p>
+    <p>
+      <textarea id="notes" rows="10" cols="60" placeholder="Write ideas here"></textarea>
+    </p>
+    <p>
+      <button onclick="saveNotes()">Save notes</button>
+      <button onclick="loadNotes()">Load notes</button>
+      <button onclick="clearNotes()">Clear notes</button>
+    </p>
+    <div id="saveState" style="font-size:14px; margin-top:6px;"></div>
+
+    <hr width="60%">
+
+    <p>
+      <a href="#top">Back to top</a>
+    </p>
+  </center>
+
+  <script>
+    function byId(id) { return document.getElementById(id); }
+
+    function sayHello() {
+      byId("out").innerText = "Hello friend. Keep going.";
+    }
+
+    function randomThought() {
+      var lines = [
+        "Write to see what you think.",
+        "Clarity grows from patient notes.",
+        "Small pages become a book.",
+        "Silence is a fine teacher.",
+        "Truth likes simple words."
+      ];
+      var i = Math.floor(Math.random() * lines.length);
+      byId("out").innerText = lines[i];
+    }
+
+    function greet() {
+      var name = byId("nameBox").value.trim();
+      if (name.length > 0) {
+        byId("out").innerText = "Welcome " + name + ". This place is yours.";
+        try { localStorage.setItem("mp_name", name); } catch(e) {}
+      } else {
+        byId("out").innerText = "Please type your name first.";
+      }
+    }
+
+    function saveNotes() {
+      var text = byId("notes").value;
+      try {
+        localStorage.setItem("mp_notes", text);
+        var t = new Date().toLocaleString();
+        byId("saveState").innerText = "Saved at " + t;
+      } catch(e) {
+        byId("saveState").innerText = "Save failed in this browser.";
+      }
+    }
+
+    function loadNotes() {
+      try {
+        var text = localStorage.getItem("mp_notes") || "";
+        byId("notes").value = text;
+        var name = localStorage.getItem("mp_name");
+        if (name) { byId("out").innerText = "Welcome back " + name + "."; }
+        byId("saveState").innerText = "Loaded from your device storage.";
+      } catch(e) {
+        byId("saveState").innerText = "Load failed in this browser.";
+      }
+    }
+
+    function clearNotes() {
+      byId("notes").value = "";
+      try {
+        localStorage.removeItem("mp_notes");
+        byId("saveState").innerText = "Cleared.";
+      } catch(e) {
+        byId("saveState").innerText = "Clear failed in this browser.";
+      }
+    }
+
+    window.addEventListener("load", loadNotes);
+  </script>
+</body>
+</html>
